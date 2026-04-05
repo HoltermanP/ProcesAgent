@@ -59,6 +59,18 @@ const STEPS = [
       </svg>
     ),
   },
+  {
+    number: "05",
+    title: "Applicatie Bouwen",
+    description:
+      "Genereer werkende Next.js code met je procesflow. Agents per stap aan/uit schakelbaar.",
+    href: "/bouwen",
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M13 10V3L4 14h7v7l9-11h-7z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
 ];
 
 export default function HomePage() {

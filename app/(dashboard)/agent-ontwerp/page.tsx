@@ -209,12 +209,20 @@ function AgentOntWERPInner() {
           )}
 
           {agents.length > 0 && (
-            <Link
-              href={`/applicatie-ontwerp${selectedProject ? `?projectId=${selectedProject.id}` : ""}`}
-              className="btn-primary text-center text-sm py-2"
-            >
-              Naar applicatie ontwerp →
-            </Link>
+            <div className="flex flex-col gap-2">
+              <Link
+                href={`/applicatie-ontwerp${selectedProject ? `?projectId=${selectedProject.id}` : ""}`}
+                className="btn-primary text-center text-sm py-2"
+              >
+                Naar applicatie ontwerp →
+              </Link>
+              <Link
+                href={`/bouwen${selectedProject ? `?projectId=${selectedProject.id}` : ""}`}
+                className="btn-cta text-center text-sm py-2"
+              >
+                Direct bouwen →
+              </Link>
+            </div>
           )}
         </div>
 

@@ -7,9 +7,10 @@ import { cn } from "@/lib/utils";
 const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/procesanalyse", label: "Procesanalyse" },
-  { href: "/visueel-ontwerp", label: "Visueel Ontwerp" },
-  { href: "/agent-ontwerp", label: "Agent Ontwerp" },
-  { href: "/applicatie-ontwerp", label: "Applicatie" },
+  { href: "/visueel-ontwerp", label: "Visueel" },
+  { href: "/agent-ontwerp", label: "Agents" },
+  { href: "/applicatie-ontwerp", label: "Ontwerp" },
+  { href: "/bouwen", label: "Bouwen" },
   { href: "/settings", label: "Instellingen" },
 ];
 
