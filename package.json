@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.2.92",
     "@anthropic-ai/sdk": "^0.82.0",
     "@neondatabase/serverless": "^1.0.2",
     "next": "14.2.35",
