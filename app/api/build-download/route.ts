@@ -3,19 +3,19 @@ import { existsSync, readFileSync } from "fs";
 import { join } from "path";
 import { tmpdir } from "os";
 import { execSync } from "child_process";
-import { BUILD_DIRS } from "@/lib/build-store";
 
 export async function GET(request: NextRequest) {
   const buildId = request.nextUrl.searchParams.get("buildId");
 
-  if (!buildId) {
+  if (!buildId || !/^[a-f0-9]+$/.test(buildId)) {
     return NextResponse.json({ error: "buildId required" }, { status: 400 });
   }
 
-  const buildDir = BUILD_DIRS.get(buildId);
-  if (!buildDir || !existsSync(buildDir)) {
+  // Reconstruct the build directory path from the buildId — no in-memory Map needed
+  const buildDir = join(tmpdir(), `procesagents-${buildId}`);
+  if (!existsSync(buildDir)) {
     return NextResponse.json(
-      { error: "Build niet gevonden. Voer de build opnieuw uit." },
+      { error: "Build niet gevonden. De tijdelijke bestanden zijn verwijderd — voer de build opnieuw uit." },
       { status: 404 }
     );
   }
