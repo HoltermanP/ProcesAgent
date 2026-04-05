@@ -21,11 +21,6 @@ interface BuildEvent {
   sessionId?: string;
 }
 
-interface DownloadFile {
-  path: string;
-  content: string;
-}
-
 interface StaticBuildData {
   files: Record<string, string>;
   project: Project;
@@ -203,21 +198,13 @@ function BouwenInner() {
     abortRef.current?.abort();
   }, []);
 
-  // ── Download built files ──
-  const handleDownloadBuilt = useCallback(async () => {
+  // ── Download built files as ZIP ──
+  const handleDownloadBuilt = useCallback(() => {
     if (!buildId) return;
-    const res = await fetch(`/api/build-download?buildId=${buildId}`);
-    if (!res.ok) return;
-    const data = (await res.json()) as { files: DownloadFile[] };
-    data.files.forEach(({ path, content }) => {
-      const blob = new Blob([content], { type: "text/plain" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = path.replace(/\//g, "_");
-      a.click();
-      URL.revokeObjectURL(url);
-    });
+    const a = document.createElement("a");
+    a.href = `/api/build-download?buildId=${buildId}`;
+    a.download = `procesagents-${buildId}.zip`;
+    a.click();
   }, [buildId]);
 
   // ── Static file preview (pre-generated) ──

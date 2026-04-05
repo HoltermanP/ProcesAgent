@@ -1,42 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readdirSync, readFileSync, statSync } from "fs";
-import { join, relative } from "path";
+import { existsSync, readFileSync } from "fs";
+import { join } from "path";
+import { tmpdir } from "os";
+import { execSync } from "child_process";
 import { BUILD_DIRS } from "@/lib/build-store";
 
-// Recursively collect all files in a directory
-function collectFiles(dir: string, base: string): Array<{ path: string; content: string }> {
-  const results: Array<{ path: string; content: string }> = [];
-  const SKIP = new Set(["node_modules", ".next", ".git", "dist", "build"]);
-
-  function walk(current: string) {
-    let entries: string[];
-    try {
-      entries = readdirSync(current);
-    } catch {
-      return;
-    }
-    for (const entry of entries) {
-      if (SKIP.has(entry)) continue;
-      const full = join(current, entry);
-      let stat;
-      try { stat = statSync(full); } catch { continue; }
-      if (stat.isDirectory()) {
-        walk(full);
-      } else {
-        try {
-          const content = readFileSync(full, "utf-8");
-          results.push({ path: relative(base, full), content });
-        } catch {
-          // skip binary files
-        }
-      }
-    }
-  }
-  walk(dir);
-  return results;
-}
-
-// Build a simple ZIP as a multi-file JSON for the client to reconstruct
 export async function GET(request: NextRequest) {
   const buildId = request.nextUrl.searchParams.get("buildId");
 
@@ -45,18 +13,40 @@ export async function GET(request: NextRequest) {
   }
 
   const buildDir = BUILD_DIRS.get(buildId);
-  if (!buildDir) {
+  if (!buildDir || !existsSync(buildDir)) {
     return NextResponse.json(
       { error: "Build niet gevonden. Voer de build opnieuw uit." },
       { status: 404 }
     );
   }
 
-  const files = collectFiles(buildDir, buildDir);
+  // Create a zip of the build directory
+  const zipPath = join(tmpdir(), `procesagents-${buildId}.zip`);
 
-  if (files.length === 0) {
-    return NextResponse.json({ error: "Geen bestanden gevonden in build directory" }, { status: 404 });
+  try {
+    execSync(
+      `cd "${buildDir}" && zip -r "${zipPath}" . --exclude "*/node_modules/*" --exclude "*/.next/*" --exclude "*/.git/*"`,
+      { encoding: "utf-8" }
+    );
+  } catch (err) {
+    return NextResponse.json(
+      { error: "ZIP aanmaken mislukt: " + (err instanceof Error ? err.message : String(err)) },
+      { status: 500 }
+    );
   }
 
-  return NextResponse.json({ files, buildDir });
+  let zipBuffer: Buffer;
+  try {
+    zipBuffer = readFileSync(zipPath);
+  } catch {
+    return NextResponse.json({ error: "ZIP bestand niet leesbaar" }, { status: 500 });
+  }
+
+  return new NextResponse(new Uint8Array(zipBuffer), {
+    headers: {
+      "Content-Type": "application/zip",
+      "Content-Disposition": `attachment; filename="procesagents-${buildId}.zip"`,
+      "Content-Length": String(zipBuffer.length),
+    },
+  });
 }
