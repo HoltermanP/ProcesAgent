@@ -27,9 +27,16 @@ export async function POST(request: NextRequest) {
       .map((m) => `${m.role === "user" ? "Gebruiker" : "AI"}: ${m.content}`)
       .join("\n\n");
 
+    if (!analysisSummary.trim()) {
+      return NextResponse.json(
+        { error: "Geen procesanalyse gevonden. Voer eerst een analyse uit." },
+        { status: 400 }
+      );
+    }
+
     const prompt = body.message
-      ? `${body.message}\n\nProcesanalyse context:\n${analysisSummary}`
-      : `Genereer een visueel procesmodel op basis van de volgende procesanalyse:\n\n${analysisSummary}\n\nGeef een JSON-object terug met 'nodes' en 'edges'. Gebruik node-types: start, end, task, decision, agent. Voeg agentOpportunity: true en opportunityScore (1-10) toe aan stappen die geschikt zijn voor automatisering. Verdeel nodes horizontaal met x-afstand van 200px en start bij x=40, y=150.`;
+      ? `${body.message}\n\nProcesanalyse:\n${analysisSummary}`
+      : `Genereer het procesmodel voor dit proces:\n\n${analysisSummary}`;
 
     const responseText = await generateText(
       SYSTEM_PROMPTS.visueelOntwerp,
