@@ -3,25 +3,87 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ai-blue: #2D6FE8;
+  --blue-light: #4B8EFF;
+  --velocity-red: #FF4D1C;
+  --deep-black: #0A0A0B;
+  --surface: #111116;
+  --navy: #0D1428;
+  --off-white: #F4F6FA;
+  --slate: #6B82A8;
+  --border: #1E1E28;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
+html,
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #0A0A0B;
+  color: #F4F6FA;
+  font-family: var(--font-space-grotesk), sans-serif;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0A0A0B;
+}
+::-webkit-scrollbar-thumb {
+  background: #1E1E28;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2D6FE8;
+}
+
+*:focus-visible {
+  outline: 2px solid #2D6FE8;
+  outline-offset: 2px;
+}
+
+::selection {
+  background: rgba(45, 111, 232, 0.3);
+  color: #F4F6FA;
+}
+
+@layer components {
+  .card {
+    @apply bg-surface border border-border rounded-card p-4;
+  }
+
+  .btn-primary {
+    @apply bg-ai-blue text-white px-4 py-2 rounded text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-cta {
+    @apply bg-velocity-red text-white px-4 py-2 rounded text-sm font-medium hover:opacity-90 transition-opacity;
+  }
+
+  .btn-outline {
+    @apply bg-transparent text-off-white border border-white/30 px-4 py-2 rounded text-sm font-medium hover:border-white/60 transition-colors;
+  }
+
+  .kpi-number {
+    @apply font-mono text-blue-light font-bold;
+  }
+
+  .label-tag {
+    @apply font-mono text-slate text-[10px] uppercase tracking-widest;
+  }
+
+  .ai-text {
+    @apply text-blue-light;
+  }
+
+  .page-heading {
+    @apply font-grotesk font-bold text-off-white;
+  }
+
+  .section-heading {
+    @apply font-grotesk font-semibold text-off-white;
   }
 }
