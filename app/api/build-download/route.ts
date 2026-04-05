@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { existsSync, readFileSync } from "fs";
+import { existsSync, readFileSync, rmSync } from "fs";
 import { join } from "path";
 import { tmpdir } from "os";
 import { execSync } from "child_process";
@@ -20,8 +20,11 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Create a zip of the build directory
+  // Create a zip of the build directory (always fresh — delete old zip if present)
   const zipPath = join(tmpdir(), `procesagents-${buildId}.zip`);
+  if (existsSync(zipPath)) {
+    try { rmSync(zipPath); } catch { /* ignore */ }
+  }
 
   try {
     execSync(
